@@ -1,0 +1,21 @@
+---
+- name: Install
+  apt: package={{ item }} state=present
+  with_items:
+    - mysql-server
+    - libmysqlclient-dev
+    - python-mysqldb
+  sudo: yes
+  register: mysql_install
+
+- name: Install Percona Toolkit
+  apt: package=percona-toolkit state=present
+  sudo: yes
+
+- name: Create Configuration File
+  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
+  sudo: yes
+  notify: Restart MySQL
+
+- include: lockdown.yml
+  when: mysql_install | changed

@@ -1,0 +1,22 @@
+---
+- name: Create Administrator
+  mysql_user:
+    name:           "{{ mysql_admin }}"
+    password:       "{{ mysql_pass }}"
+    login_user:     root
+    login_password: ""
+    priv:           "*.*:ALL,GRANT"
+    state:          present
+
+- name: Remove Root User
+  mysql_user:
+    name:           root
+    host:           "{{ item }}"
+    login_user:     "{{ mysql_admin }}"
+    login_password: "{{ mysql_pass }}"
+    state:          absent
+  with_items:
+    - localhost
+    - 127.0.0.1
+    - "::1"
+    - "{{ ansible_hostname }}"
