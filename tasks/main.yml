@@ -5,16 +5,16 @@
     - mysql-server
     - libmysqlclient-dev
     - python-mysqldb
-  sudo: yes
+  become: yes
   register: mysql_install
 
 - name: Install Percona Toolkit
   apt: package=percona-toolkit state=present
-  sudo: yes
+  become: yes
 
 - name: Create Configuration File
   template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
-  sudo: yes
+  become: yes
   notify: Restart MySQL
 
 - include: lockdown.yml
