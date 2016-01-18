@@ -2,6 +2,7 @@ Ansible Install MySQL Role
 ==========================
 
 [![Build Status](https://travis-ci.org/bbatsche/Ansible-MySQL-Install-Role.svg?branch=master)](https://travis-ci.org/bbatsche/Ansible-MySQL-Install-Role)
+[![Ansible Galaxy](https://img.shields.io/ansible/role/6893.svg)](https://galaxy.ansible.com/detail#/role/6893)
 
 This role will install and secure a basic MySQL server
 
