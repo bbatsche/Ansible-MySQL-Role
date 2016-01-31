@@ -3,7 +3,7 @@ require_relative "bootstrap"
 
 RSpec.configure do |config|
   config.before :suite do
-    AnsibleHelper.instance.playbook "playbooks/mysql-install.yml", app_env: "production"
+    AnsibleHelper.instance.playbook "playbooks/mysql-install.yml", env_name: "production"
   end
 end
 
