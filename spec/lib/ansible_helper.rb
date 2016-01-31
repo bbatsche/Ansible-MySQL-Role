@@ -1,10 +1,9 @@
-require 'serverspec'
 require 'net/ssh'
 require 'tempfile'
 require 'singleton'
 require 'shellwords'
 
-class SpecHelper
+class AnsibleHelper
   include Singleton
 
   def initialize(host = ENV['HOST_NAME'])
@@ -29,10 +28,11 @@ class SpecHelper
     Net::SSH::Config.for(@hostname, [@sshConfig.path])
   end
 
-  def provision(playbook, extraVars = {})
-    playbook = Shellwords.escape(File.expand_path(playbook, File.dirname(__FILE__)))
+  def playbook(playbookFile, extraVars = {})
+    specDir = File.expand_path(File.dirname(__FILE__) + "/../")
+    playbookFile = Shellwords.escape(File.expand_path(playbookFile, specDir))
 
-    cmd = "ansible-playbook -i #{@inventory.path} #{playbook}"
+    cmd = "ansible-playbook -i #{@inventory.path} #{playbookFile}"
 
     extraVars.each do |key, value|
       cmd << " -e \"#{key.to_s}=#{value}\""
@@ -40,20 +40,16 @@ class SpecHelper
 
     system cmd
   end
+
+  def cmd(moduleName, moduleArgs = "")
+    cmd = "ansible #{@hostname} -i #{@inventory.path} -m #{moduleName} -u vagrant --become"
+
+    if moduleArgs != ""
+      moduleArgs = Shellwords.escape moduleArgs
+
+      cmd << " -a #{moduleArgs}"
+    end
+
+    system cmd
+  end
 end
-
-options = SpecHelper.instance.sshOptions
-
-set :backend, :ssh
-
-set :host,        options[:host_name]
-set :ssh_options, options
-
-# Disable sudo
-set :disable_sudo, true
-
-# Set environment variables
-# set :env, :LANG => 'C', :LC_MESSAGES => 'C'
-
-# Set PATH
-set :path, '/sbin:/usr/local/sbin:/usr/local/bin:$PATH'
