@@ -1,6 +1,6 @@
 ---
 - name: Install
-  apt: package={{ item }} state=present
+  apt: name={{ item }} state=present
   with_items:
     - mysql-server
     - libmysqlclient-dev
