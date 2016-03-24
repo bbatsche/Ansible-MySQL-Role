@@ -1,5 +1,5 @@
 ---
-mysql_admin: vagrant
-mysql_pass:  vagrant
+db_admin: vagrant
+db_pass:  vagrant
 
 env_name: dev

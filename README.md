@@ -9,8 +9,8 @@ This role will install and secure a basic MySQL server
 Role Variables
 --------------
 
-- `mysql_admin` &mdash; Admin username to be created. Default: "vagrant"
-- `mysql_pass` &mdash; Password for admin user to be created. Default "vagrant"
+- `db_admin` &mdash; Admin username to be created. Default: "vagrant"
+- `db_pass` &mdash; Password for admin user to be created. Default "vagrant"
 - `env_name` &mdash; Whether this sever is going to be used for "development", "production", etc. Default "dev"
 
 Example Playbook
