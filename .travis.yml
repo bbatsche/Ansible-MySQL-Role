@@ -25,13 +25,13 @@ install:
 
   - echo localhost ansible_connection=local ansible_ssh_user=$USER > inventory
 
-  - travis_wait ansible-playbook -i inventory provision-playbook.yml
+  # - travis_wait ansible-playbook -i inventory provision-playbook.yml
 before_script:
   - "echo #!/bin/sh >> play.sh"
   - echo sudo su $USER -c \'ansible-playbook -i inventory travis-playbook.yml\' >> play.sh
   - chmod +x play.sh
 script:
-  - travis_wait 'sudo -E su $USER -c \'rake spec\''
+  - travis_wait sudo -E su $USER -c 'rake spec'
   # Syntax check
   - ansible-playbook -i inventory travis-playbook.yml --syntax-check
 
