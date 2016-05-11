@@ -31,6 +31,7 @@ before_script:
   - echo sudo su $USER -c \'ansible-playbook -i inventory travis-playbook.yml\' >> play.sh
   - chmod +x play.sh
 script:
+  - travis_wait 'sudo -E su $USER -c \'rake spec\''
   # Syntax check
   - ansible-playbook -i inventory travis-playbook.yml --syntax-check
 
@@ -44,6 +45,6 @@ script:
     && (echo "Idempotence test: pass" && exit 0) || (echo "Idempotence test: fail" && cat idempotence.out && exit 1)
 
   # Serverspec
-  - travis_wait "sudo -E su $USER -c \'rake spec\'"
+  # - travis_wait "sudo -E su $USER -c \'rake spec\'"
 notifications:
     webhooks: https://galaxy.ansible.com/api/v1/notifications/
