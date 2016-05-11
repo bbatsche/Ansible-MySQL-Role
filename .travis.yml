@@ -19,13 +19,13 @@ before_install:
 install:
   - sudo -H pip install "ansible~=$ANSIBLE_VERSION"
 
+  - bundle install
+
   - sudo ansible-galaxy install bbatsche.Base
 
   - echo localhost ansible_connection=local ansible_ssh_user=$USER > inventory
 
   - travis_wait ansible-playbook -i inventory provision-playbook.yml
-
-  - bundle install
 before_script:
   - "echo #!/bin/sh >> play.sh"
   - echo sudo su $USER -c \'ansible-playbook -i inventory travis-playbook.yml\' >> play.sh
