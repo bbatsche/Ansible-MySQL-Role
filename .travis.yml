@@ -14,8 +14,7 @@ env:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq python-apt python-pycurl
-  - rvm use 2.2.3
-  - gem install bundler
+  - sudo gem install bundler
 install:
   - sudo -H pip install "ansible~=$ANSIBLE_VERSION"
 
