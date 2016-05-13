@@ -32,7 +32,7 @@ before_script:
   - chmod +x play.sh
 
   - "echo #!/bin/sh >> spec.sh"
-  - "echo sudo su -l $USER -c \'rvm use default\; cd $PWD && rake spec\' >> spec.sh"
+  - "echo sudo su -l $USER -c \\'rvm use default\\; cd $PWD && rake spec\\' >> spec.sh"
   - chmod +x spec.sh
 script:
   # Syntax check
