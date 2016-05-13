@@ -8,9 +8,9 @@ class AnsibleHelper
 
   def initialize
     @inventory = File.new 'inventory'
-    @inventory.close # don't need to hold on to this, just a pointer for the file's path
+    @inventory.close # don't need to hold on the handle, just need a pointer for the file's path
 
-    generateInventory unless ENV.fetch("INTEGRATION", false)
+    generateInventory unless ENV.has_key? "INTEGRATION"
   end
 
   def generateInventory

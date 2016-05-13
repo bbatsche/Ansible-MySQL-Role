@@ -1,7 +1,7 @@
 require "serverspec"
 require_relative "lib/ansible_helper"
 
-if ENV.fetch("INTEGRATION", false)
+if ENV.has_key? "INTEGRATION"
   set :backend, :exec
 else
   options = AnsibleHelper.instance.sshOptions
