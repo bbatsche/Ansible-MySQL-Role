@@ -34,6 +34,7 @@ before_script:
   - "echo #!/bin/sh >> spec.sh"
   - >
     echo "sudo -E su -l $USER -c 'rvm use default; cd $PWD && rake spec'" >> spec.sh
+  - echo "env" >> spec.sh
   - chmod +x spec.sh
 script:
   # Syntax check

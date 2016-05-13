@@ -3,6 +3,9 @@ require "yaml"
 require "rspec/core/rake_task"
 require_relative "spec/lib/ansible_helper"
 require_relative "spec/lib/vagrant_helper"
+require 'pp'
+
+pp ENV
 
 desc "Run an arbitrary vagrant command for the test environment"
 task :vagrant, [:cmd] => [:"vagrant:up"] do |t, args|
