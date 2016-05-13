@@ -5,11 +5,8 @@ dist: trusty
 language: generic
 
 env:
-  global:
-    - INTEGRATION=true
-  matrix:
-    - ANSIBLE_VERSION="1.9"
-    - ANSIBLE_VERSION="2.0"
+  - ANSIBLE_VERSION="1.9"
+  - ANSIBLE_VERSION="2.0"
 
 before_install:
   - sudo apt-get update -qq
@@ -32,9 +29,9 @@ before_script:
   - chmod +x play.sh
 
   - "echo #!/bin/sh >> spec.sh"
+  - echo "sudo -E su -l $USER -c 'env'" >> spec.sh
   - >
     echo "sudo -E su -l $USER -c 'rvm use default; cd $PWD && rake spec'" >> spec.sh
-  - echo "env" >> spec.sh
   - chmod +x spec.sh
 script:
   # Syntax check
