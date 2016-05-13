@@ -10,7 +10,7 @@ class AnsibleHelper
     @inventory = File.new 'inventory'
     @inventory.close # don't need to hold on the handle, just need a pointer for the file's path
 
-    generateInventory unless ENV.has_key? "CONTINUOUS_INTEGRATION" && ENV["CONTINUOUS_INTEGRATION"] == "true"
+    generateInventory unless ENV.has_key?("CONTINUOUS_INTEGRATION") && ENV["CONTINUOUS_INTEGRATION"] == "true"
   end
 
   def generateInventory
