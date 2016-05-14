@@ -20,4 +20,4 @@ set :disable_sudo, true
 # set :env, :LANG => 'C', :LC_MESSAGES => 'C'
 
 # Set PATH
-set :path, '/sbin:/usr/local/sbin:/usr/local/bin:$PATH'
+set :path, '/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin:$PATH'

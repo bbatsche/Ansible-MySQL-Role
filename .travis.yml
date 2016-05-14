@@ -39,8 +39,6 @@ script:
   # Play test
   - travis_wait ./play.sh
 
-  - which mysqld
-
   # Idempotence test
   - ./play.sh > idempotence.out
   - >
