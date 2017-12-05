@@ -1,9 +1,8 @@
-require_relative "lib/ansible_helper"
 require_relative "bootstrap"
 
 RSpec.configure do |config|
   config.before :suite do
-    AnsibleHelper.instance.playbook "playbooks/mysql-install.yml"
+    AnsibleHelper.playbook "playbooks/mysql-install.yml"
   end
 end
 
