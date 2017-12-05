@@ -2,54 +2,58 @@
 sudo: required
 dist: trusty
 
+services:
+  - docker
+
 language: generic
+cache:
+  directories:
+    - vendor/bundle
+    - $HOME/.cache/pip
 
 env:
-  - ANSIBLE_VERSION="1.9"
-  - ANSIBLE_VERSION="2.0"
   - ANSIBLE_VERSION="2.1"
+  - ANSIBLE_VERSION="2.2"
+  - ANSIBLE_VERSION="2.3"
+  - ANSIBLE_VERSION="2.4"
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq python-apt python-pycurl
-  - rvm use default
-  - sudo gem install bundler
+  - sudo apt-get install -y -o Dpkg::Options::="--force-confold" docker-ce
+
+  - docker pull ubuntu:trusty
+  - docker pull ubuntu:xenial
+
+  - travis_retry bundle install
+
 install:
-  - sudo -H pip install ansible==${ANSIBLE_VERSION}.*
+  - travis_retry sudo -H pip install ansible==${ANSIBLE_VERSION}.*
 
-  - bundle install
-
-  - sudo ansible-galaxy install bbatsche.Base
-
-  - echo localhost ansible_connection=local ansible_ssh_user=$USER > inventory
+  - travis_retry sudo ansible-galaxy install bbatsche.Base
 
   - mkdir -p $HOME/.ansible
   - sudo chown -R $USER:$USER $HOME/.ansible
 
-  - ansible-playbook -i inventory provision-playbook.yml --skip-tags timezone,sysctl,apt,ruby,node,bash,swap
-before_script:
-  - "echo #!/bin/sh >> play.sh"
-  - echo "sudo -E su $USER -c 'ansible-playbook -i inventory travis-playbook.yml'" >> play.sh
-  - chmod +x play.sh
+  - travis_wait rake environment:provision
 
-  - "echo #!/bin/sh >> spec.sh"
-  - >
-    echo "sudo -E su -l $USER -c 'rvm use default; cd $TRAVIS_BUILD_DIR && rake spec'" >> spec.sh
-  - chmod +x spec.sh
 script:
   # Syntax check
-  - ansible-playbook -i inventory travis-playbook.yml --syntax-check
+  - ansible-playbook travis-playbook.yml --syntax-check
 
   # Play test
-  - travis_wait ./play.sh
+  - rake ansible:playbook[travis-playbook.yml]
 
   # Idempotence test
-  - ./play.sh > idempotence.out
+  - rake ansible:playbook[travis-playbook.yml] > idempotence.out
   - >
     grep -q "changed=0.*failed=0" idempotence.out
     && (echo "Idempotence test: pass" && exit 0) || (echo "Idempotence test: fail" && cat idempotence.out && exit 1)
 
   # Serverspec
-  # - travis_wait ./spec.sh
+  - rake spec
+
+after_script:
+  - rake environment:destroy
+
 notifications:
     webhooks: https://galaxy.ansible.com/api/v1/notifications/
