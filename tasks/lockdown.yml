@@ -1,4 +1,12 @@
 ---
+- name: Check Administrator Access
+  mysql_variables:
+    variable:       hostname
+    login_user:     "{{ db_admin }}"
+    login_password: "{{ db_pass }}"
+  failed_when: no
+  register: mysql_admin_access
+
 - name: Create Administrator
   mysql_user:
     name:           "{{ db_admin }}"
@@ -7,6 +15,8 @@
     login_password: ""
     priv:           "*.*:ALL,GRANT"
     state:          present
+  become: yes
+  when: mysql_admin_access.msg | search("Access denied for user")
 
 - name: Remove Root User
   mysql_user:

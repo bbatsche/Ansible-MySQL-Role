@@ -1,0 +1,31 @@
+---
+- hosts: all
+
+  vars_files:
+    - ../../defaults/main.yml
+
+  pre_tasks:
+    - name: Stop Service
+      service: name=mysql state=stopped
+      become: yes
+      ignore_errors: yes # service may not have been installed yet
+
+    - name: Uninstall packages
+      apt: name={{ item }} state=absent purge=yes autoclean=yes autoremove=yes
+      become: yes
+      with_items:
+        - mysql-community-server
+        - mysql-server
+        - libmysqlclient-dev
+        - mysql-common
+        - mariadb-server
+        - mariadb-server-10.2
+        - mariadb-server-core-10.2
+        - libmariadb-dev
+        - mariadb-common
+
+  tasks:
+    - include: ../../tasks/main.yml
+
+  handlers:
+    - include: ../../handlers/main.yml

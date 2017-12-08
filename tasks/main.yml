@@ -1,21 +1,12 @@
 ---
-- name: Install
-  apt: name={{ item }} state=present
-  with_items:
-    - mysql-server
-    - libmysqlclient-dev
-    - python-mysqldb
-  become: yes
-  register: mysql_install
+- include: install_mysql.yml
+  static: no
+  when: install_mysql
 
-- name: Install Percona Toolkit
-  apt: package=percona-toolkit state=present
-  become: yes
+- include: install_mariadb.yml
+  static: no
+  when: install_mariadb
 
-- name: Create Configuration File
-  template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
-  become: yes
-  notify: Restart MySQL
-
-- include: lockdown.yml
-  when: mysql_install | changed
+- include: user.yml
+  static: no
+  when: db_name is defined or (new_db_user is defined and new_db_pass is defined)

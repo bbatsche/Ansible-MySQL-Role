@@ -4,6 +4,14 @@
   vars_files:
     - defaults/main.yml
 
+  pre_tasks:
+    - name: Get ENV
+      set_fact: install_which={{ lookup('env', 'INSTALL') }}
+    - name: Set Install MySQL
+      set_fact: install_mysql={{ install_which == 'mysql' }}
+    - name: Set Install MariaDB
+      set_fact: install_mariadb={{ install_which == 'mariadb' }}
+
   tasks:
     - include: tasks/main.yml
 

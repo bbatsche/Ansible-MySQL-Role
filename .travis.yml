@@ -12,10 +12,14 @@ cache:
     - $HOME/.cache/pip
 
 env:
-  - ANSIBLE_VERSION="2.1"
-  - ANSIBLE_VERSION="2.2"
-  - ANSIBLE_VERSION="2.3"
-  - ANSIBLE_VERSION="2.4"
+  - ANSIBLE_VERSION="2.1" INSTALL=mysql
+  - ANSIBLE_VERSION="2.2" INSTALL=mysql
+  - ANSIBLE_VERSION="2.3" INSTALL=mysql
+  - ANSIBLE_VERSION="2.4" INSTALL=mysql
+  - ANSIBLE_VERSION="2.1" INSTALL=mariadb
+  - ANSIBLE_VERSION="2.2" INSTALL=mariadb
+  - ANSIBLE_VERSION="2.3" INSTALL=mariadb
+  - ANSIBLE_VERSION="2.4" INSTALL=mariadb
 
 before_install:
   - sudo apt-get update -qq

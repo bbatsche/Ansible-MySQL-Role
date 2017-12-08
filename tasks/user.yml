@@ -1,0 +1,18 @@
+---
+- name: Create Database
+  mysql_db:
+    name:           "{{ db_name }}"
+    login_user:     "{{ db_admin }}"
+    login_password: "{{ db_pass }}"
+    collation:      utf8_general_ci
+    state:          present
+  when: db_name is defined
+
+- name: Create User
+  mysql_user:
+    name:           "{{ new_db_user }}"
+    password:       "{{ new_db_pass }}"
+    login_user:     "{{ db_admin }}"
+    login_password: "{{ db_pass }}"
+    priv:           "{{ new_db_priv | default(db_name + '.*:ALL' if db_name is defined else '*.*:ALL,GRANT') }}"
+    state:          present
