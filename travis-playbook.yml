@@ -11,6 +11,8 @@
       set_fact: install_mysql={{ install_which == 'mysql' }}
     - name: Set Install MariaDB
       set_fact: install_mariadb={{ install_which == 'mariadb' }}
+    - name: Set Install Percona
+      set_fact: install_percona={{ install_which == 'percona' }}
 
   tasks:
     - include: tasks/main.yml

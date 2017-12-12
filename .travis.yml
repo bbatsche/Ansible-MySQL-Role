@@ -20,6 +20,10 @@ env:
   - ANSIBLE_VERSION="2.2" INSTALL=mariadb
   - ANSIBLE_VERSION="2.3" INSTALL=mariadb
   - ANSIBLE_VERSION="2.4" INSTALL=mariadb
+  - ANSIBLE_VERSION="2.1" INSTALL=percona
+  - ANSIBLE_VERSION="2.2" INSTALL=percona
+  - ANSIBLE_VERSION="2.3" INSTALL=percona
+  - ANSIBLE_VERSION="2.4" INSTALL=percona
 
 before_install:
   - sudo apt-get update -qq
