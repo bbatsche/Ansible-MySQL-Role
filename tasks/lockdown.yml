@@ -1,4 +1,8 @@
 ---
+- name: Start MySQL
+  service: name=mysql state=started enabled=yes
+  become: yes
+
 - name: Check Administrator Access
   mysql_variables:
     variable:       hostname

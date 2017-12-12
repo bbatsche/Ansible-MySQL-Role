@@ -5,36 +5,16 @@ RSpec.configure do |config|
     AnsibleHelper.playbook("playbooks/install.yml", ENV["TARGET_HOST"], {install_mysql: true})
   end
 end
-#
-# describe command("mysql --version") do
-#   its(:stdout) { should match /\b5\.5\.\d+/ }
-#
-#   its(:exit_status) { should eq 0 }
-# end
-#
-# describe command("mysqld --version") do
-#   its(:stdout) { should match /\b5\.5\.\d+/ }
-#
-#   its(:exit_status) { should eq 0 }
-# end
 
-describe service('mysql') do
-  let(:disable_sudo) { false }
-  it { should be_running }
+describe "MySQL" do
+  include_examples "mysql server"
+  include_examples("mysql client", "5.7")
 end
 
-describe command("mysql -u vagrant -pvagrant -e \"SELECT 'MySQL Installed'\"") do
-  its(:stdout) { should match /MySQL Installed/ }
-
-  its(:exit_status) { should eq 0}
+describe "User Access" do
+  include_examples "mysql security"
 end
 
-describe command("mysql -u root") do
-  its(:stderr) { should match /Access denied for user 'root'@'localhost'/ }
-
-  its(:exit_status) { should_not eq 0}
-end
-#
 # describe command("mysql -u vagrant -pvagrant -e \"SHOW VARIABLES LIKE 'slow_query_log'\"") do
 #   its(:stdout) { should match /ON/ }
 # end

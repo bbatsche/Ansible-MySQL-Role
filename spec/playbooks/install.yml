@@ -30,17 +30,20 @@
       become: yes
       with_items:
         - percona-server-*
+
     - name: Clean up APT Data
       command: apt-get clean -y
       args:
         warn: no
       become: yes
+
     - name: Remove MariaDB APT Repository
       apt_repository: repo="{{ item }} {{ ansible_distribution_release }} main" state=absent
       become: yes
       with_items:
         - deb {{ mariadb_apt_mirror }}/mariadb/repo/{{ mariadb_version }}/ubuntu
         - deb-src {{ mariadb_apt_mirror }}/mariadb/repo/{{ mariadb_version }}/ubuntu
+
     - name: Delete MySQL Data
       file: path={{ item }} state=absent
       become: yes
