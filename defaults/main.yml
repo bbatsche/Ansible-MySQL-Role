@@ -10,7 +10,9 @@ install_percona: no
 
 mysql_deb: https://dev.mysql.com/get/mysql-apt-config_0.8.9-1_all.deb
 
-mariadb_apt_key_id: "0xcbcb082a1bb943db"
+mariadb_apt_key:
+  trusty: "0xcbcb082a1bb943db"
+  xenial: "0xF1656F24C74CD1D8"
 mariadb_version: "10.2"
 mariadb_apt_mirror: http://nyc2.mirrors.digitalocean.com
 

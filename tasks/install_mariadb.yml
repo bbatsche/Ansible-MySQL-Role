@@ -1,6 +1,6 @@
 ---
 - name: Add MariaDB APT Key
-  apt_key: keyserver=keyserver.ubuntu.com id={{ mariadb_apt_key_id }} state=present
+  apt_key: keyserver=keyserver.ubuntu.com id={{ mariadb_apt_key[ansible_distribution_release] }} state=present
   become: yes
 
 - name: Add MariaDB APT Repository

@@ -12,6 +12,10 @@ cache:
     - $HOME/.cache/pip
 
 env:
+  - ANSIBLE_VERSION="2.1"
+  - ANSIBLE_VERSION="2.2"
+  - ANSIBLE_VERSION="2.3"
+  - ANSIBLE_VERSION="2.4"
   - ANSIBLE_VERSION="2.1" INSTALL=mysql
   - ANSIBLE_VERSION="2.2" INSTALL=mysql
   - ANSIBLE_VERSION="2.3" INSTALL=mysql
@@ -46,19 +50,19 @@ install:
 
 script:
   # Syntax check
-  - ansible-playbook travis-playbook.yml --syntax-check
+  - if [[ -n "$INSTALL" ]]; then ansible-playbook travis-playbook.yml --syntax-check; fi
 
   # Play test
-  - rake ansible:playbook[travis-playbook.yml]
+  - if [[ -n "$INSTALL" ]]; then rake ansible:playbook[travis-playbook.yml]; fi
 
   # Idempotence test
-  - rake ansible:playbook[travis-playbook.yml] > idempotence.out
-  - >
-    grep -q "changed=0.*failed=0" idempotence.out
-    && (echo "Idempotence test: pass" && exit 0) || (echo "Idempotence test: fail" && cat idempotence.out && exit 1)
+  - > if [[ -n "$INSTALL" ]]; then
+    rake ansible:playbook[travis-playbook.yml] | grep -q "changed=0.*failed=0"
+    && (echo "Idempotence test: pass" && exit 0) || (echo "Idempotence test: fail" && cat idempotence.out && exit 1);
+    fi
 
   # Serverspec
-  - rake spec
+  - if [[ -z "$INSTALL" ]]; then rake spec; fi
 
 after_script:
   - rake environment:destroy
