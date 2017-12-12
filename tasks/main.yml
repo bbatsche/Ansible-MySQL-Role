@@ -11,6 +11,20 @@
   static: no
   when: install_percona
 
+- block:
+  - name: Install Percona Toolkit
+    apt: package=percona-toolkit state=present
+    become: yes
+
+  # - name: Create Configuration File
+  #   template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
+  #   become: yes
+  #   notify: Restart MySQL
+
+  - include: lockdown.yml
+    when: mysql_installed | changed
+  when: install_mysql or install_mariadb or install_percona
+
 - include: user.yml
   static: no
   when: db_name is defined or (new_db_user is defined and new_db_pass is defined)

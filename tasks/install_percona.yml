@@ -6,20 +6,8 @@
 - name: Install Percona Server
   apt: name={{ item }} state=present update_cache=yes
   become: yes
-  register: percona_install
+  register: mysql_installed
   with_items:
     - percona-server-server-{{ percona_version }}
-    # - libmysqlclient-dev
+    - libmysqlclient-dev
     - python-mysqldb
-
-- name: Install Percona Toolkit
-  apt: package=percona-toolkit state=present
-  become: yes
-
-# - name: Create Configuration File
-#   template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
-#   become: yes
-#   notify: Restart MySQL
-
-- include: lockdown.yml
-  when: percona_install | changed

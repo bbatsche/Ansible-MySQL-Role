@@ -13,15 +13,8 @@
 - name: Install MariaDB
   apt: name={{ item }} state=present update_cache=yes
   become: yes
-  register: mariadb_install
+  register: mysql_installed
   with_items:
     - mariadb-server
     - libmariadb-dev
     - python-mysqldb
-
-- name: Install Percona Toolkit
-  apt: package=percona-toolkit state=present
-  become: yes
-
-- include: lockdown.yml
-  when: mariadb_install | changed
