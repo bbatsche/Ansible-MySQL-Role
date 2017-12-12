@@ -11,7 +11,7 @@
     - deb-src {{ mariadb_apt_mirror }}/mariadb/repo/{{ mariadb_version }}/ubuntu
 
 - name: Install MariaDB
-  apt: name={{ item }} state=present
+  apt: name={{ item }} state=present update_cache=yes
   become: yes
   register: mariadb_install
   with_items:

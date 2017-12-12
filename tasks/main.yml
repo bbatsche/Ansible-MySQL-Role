@@ -7,6 +7,10 @@
   static: no
   when: install_mariadb
 
+- include: install_percona.yml
+  static: no
+  when: install_percona
+
 - include: user.yml
   static: no
   when: db_name is defined or (new_db_user is defined and new_db_pass is defined)

@@ -10,19 +10,43 @@
       become: yes
       ignore_errors: yes # service may not have been installed yet
 
-    - name: Uninstall packages
-      apt: name={{ item }} state=absent purge=yes autoclean=yes autoremove=yes
+    - name: Uninstall MySQL
+      apt: name={{ item }} state=absent purge=yes autoremove=yes
+      become: yes
+      ignore_errors: yes # may not have installed one of the external repos yet
+      with_items:
+        - mysql-*
+        - libmysql*
+    - name: Uninstall MariaDB
+      apt: name={{ item }} state=absent purge=yes autoremove=yes
+      become: yes
+      ignore_errors: yes # may not have installed one of the external repos yet
+      with_items:
+        - mariadb-*
+        - libmariadb*
+    - name: Uninstall Percona
+      apt: name={{ item }} state=absent purge=yes autoremove=yes
+      ignore_errors: yes # may not have installed one of the external repos yet
       become: yes
       with_items:
-        - mysql-community-server
-        - mysql-server
-        - libmysqlclient-dev
-        - mysql-common
-        - mariadb-server
-        - mariadb-server-10.2
-        - mariadb-server-core-10.2
-        - libmariadb-dev
-        - mariadb-common
+        - percona-server-*
+    - name: Clean up APT Data
+      command: apt-get clean -y
+      args:
+        warn: no
+      become: yes
+    - name: Remove MariaDB APT Repository
+      apt_repository: repo="{{ item }} {{ ansible_distribution_release }} main" state=absent
+      become: yes
+      with_items:
+        - deb {{ mariadb_apt_mirror }}/mariadb/repo/{{ mariadb_version }}/ubuntu
+        - deb-src {{ mariadb_apt_mirror }}/mariadb/repo/{{ mariadb_version }}/ubuntu
+    - name: Delete MySQL Data
+      file: path={{ item }} state=absent
+      become: yes
+      with_items:
+        - /var/lib/mysql
+        - /etc/mysql
 
   tasks:
     - include: ../../tasks/main.yml

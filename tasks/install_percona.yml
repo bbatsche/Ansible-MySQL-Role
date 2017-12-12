@@ -1,15 +1,15 @@
 ---
-- name: Add MySQL Package
-  apt: deb={{ mysql_deb }}
+- name: Add Percona Package
+  apt: deb={{ percona_deb }}
   become: yes
 
-- name: Install MySQL
+- name: Install Percona Server
   apt: name={{ item }} state=present update_cache=yes
   become: yes
-  register: mysql_install
+  register: percona_install
   with_items:
-    - mysql-server
-    - libmysqlclient-dev
+    - percona-server-server-{{ percona_version }}
+    # - libmysqlclient-dev
     - python-mysqldb
 
 - name: Install Percona Toolkit
@@ -22,4 +22,4 @@
 #   notify: Restart MySQL
 
 - include: lockdown.yml
-  when: mysql_install | changed
+  when: percona_install | changed
