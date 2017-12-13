@@ -16,10 +16,32 @@
     apt: package=percona-toolkit state=present
     become: yes
 
-  # - name: Create Configuration File
-  #   template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
-  #   become: yes
-  #   notify: Restart MySQL
+  - name: Delete Default Configs
+    file: name=/etc/mysql/{{ item }} state=absent
+    become: yes
+    notify: Restart MySQL
+    with_items:
+      - conf.d/mariadb.cnf
+      - conf.d/mysqld_safe_syslog.cnf
+      - mysql.conf.d/mysqld.cnf
+      - percona-server.conf.d/mysqld.cnf
+      - percona-server.conf.d/mysqld_safe.cnf
+
+  - name: Copy Config Files
+    template: src={{ item.src }} dest=/etc/mysql/{{ item.dest }}
+    become: yes
+    when: item.when
+    notify: Restart MySQL
+    with_items:
+      - { src: my.cnf.j2,          dest: my.cnf,                    when: yes }
+      - { src: mysqld_safe.cnf.j2, dest: conf.d/mysqld_safe.cnf,    when: yes }
+      - { src: mysqld.cnf.j2,      dest: conf.d/mysqld.cnf,         when: yes }
+      - { src: client.cnf.j2,      dest: conf.d/client.cnf,         when: yes }
+      - { src: mysqldump.cnf.j2,   dest: conf.d/mysqldump.cnf,      when: yes }
+      - { src: isamchk.cnf.j2,     dest: conf.d/isamchk.cnf,        when: yes }
+      - { src: galera.cnf.j2,      dest: mariadb.conf.d/galera.cnf, when: "{{ install_mariadb }}" }
+      - { src: innodb.cnf.j2,      dest: mariadb.conf.d/innodb.cnf, when: "{{ install_mariadb }}" }
+      - { src: innodb.cnf.j2,      dest: mysql.conf.d/innodb.cnf,   when: "{{ install_mysql }}" }
 
   - include: lockdown.yml
     when: mysql_installed | changed
