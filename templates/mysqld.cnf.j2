@@ -10,51 +10,41 @@ tmpdir                          = /tmp
 lc_messages_dir                 = /usr/share/mysql
 skip_external_locking           = 1
 explicit_defaults_for_timestamp = 1
+skip_name_resolve               = 1
 
 # Disabling symbolic-links is recommended to prevent assorted security risks
-symbolic-links = 0
+symbolic_links = 0
 
 # Instead of skip-networking the default is now to listen only on
 # localhost which is more compatible and is not less secure.
-bind-address = {{ "*" if mysql_enable_network else "127.0.0.1" }}
+bind_address = {{ "*" if mysql_enable_network else "127.0.0.1" }}
 
 # * Fine Tuning
-bulk_insert_buffer_size = 16M
-connect_timeout         = 5
-key_buffer_size         = 16M
-max_allowed_packet      = 16M
-max_connections         = 100
-max_heap_table_size     = 32M
-sort_buffer_size        = 4M
-thread_cache_size       = 128
-thread_stack            = 192K
-tmp_table_size          = 32M
-wait_timeout            = 600
+connect_timeout      = 5
+max_allowed_packet   = {{ mysql_max_allowed_packet | default("16M") }}
+max_connections      = {{ mysql_max_connections | default("300") }}
+max_heap_table_size  = {{ mysql_max_heap_table_size | default((ansible_memtotal_mb / 1024 * 64) | int | string + "M") }}
+open_files_limit     = {{ mysql_open_files_limit | default((ansible_memtotal_mb * 128 / 4) | int)}}
+read_rnd_buffer_size = {{ mysql_read_rnd_buffer_size | default("2M") }}
+read_buffer_size     = {{ mysql_read_buffer_size | default("2M")}}
+sort_buffer_size     = {{ mysql_sort_buffer_size | default("2M") }}
+table_open_cache     = {{ mysql_table_open_cache | default("2000") }}
+tmp_table_size       = {{ mysql_tmp_table_size | default((ansible_memtotal_mb / 1024 * 64) | int | string + "M") }}
+wait_timeout         = {{ mysql_wait_timeout | default("300") }}
 
 # * MyISAM
 # This replaces the startup script and checks MyISAM tables if needed
 # the first time they are touched. On error, make copy and try a repair.
+bulk_insert_buffer_size = {{ mysql_bulk_insert_buffer_size | default("16M") }}
+concurrent_insert       = ALWAYS
+key_buffer_size         = {{ mysql_key_buffer_size | default((ansible_memtotal_mb * (mysql_mem_percent | default(40) / 100) * (mysql_key_buffer_percent | default(10) / 100)) | int | string + "M") }}
 myisam_recover_options  = BACKUP
-key_buffer_size         = 128M
-#open_files_limit       = 2000
-table_open_cache        = 400
-myisam_sort_buffer_size = 512M
-concurrent_insert       = 2
-read_buffer_size        = 2M
-read_rnd_buffer_size    = 1M
-#table_cache            = 64
-#thread_concurrency     = 10
+myisam_sort_buffer_size = {{ myisam_sort_buffer_size | default("128M") }}
 
 # * Query Cache Configuration
-query_cache_limit = 1M
-query_cache_size  = 16M
-
-# * Logging and Replication
-# Both location gets rotated by the cronjob.
-# Be aware that this log type is a performance killer.
-# As of 5.1 you can enable the log at runtime!
-#general_log_file        = /var/log/mysql/mysql.log
-#general_log             = 1
+query_cache_type  = {{ mysql_query_cache_type | default("ON") }}
+query_cache_limit = {{ mysql_query_cache_limit | default("1M") }}
+query_cache_size  = {{ mysql_query_cache_size | default("32M" if mysql_query_cache_type is not defined or mysql_query_cache_type == "0" or mysql_query_cache_type == "OFF" else "0") }}
 
 # Error log - should be very few entries.
 log_error = /var/log/mysql/error.log
@@ -66,16 +56,6 @@ slow_query_log_file           = /var/log/mysql/slow.log
 long_query_time               = 5
 log_queries_not_using_indexes = 1
 {% endif %}
-
-# The following can be used as easy to replay backup logs or for replication.
-# note: if you are setting up a replication slave, see README.Debian about
-#       other settings you may need to change.
-#server-id       = 1
-#log_bin         = /var/log/mysql/mysql-bin.log
-expire_logs_days = 10
-max_binlog_size  = 100M
-#binlog_do_db     = include_database_name
-#binlog_ignore_db = include_database_name
 
 # * Character Set & Collation
 character_set_server = utf8
