@@ -40,9 +40,7 @@
       - { src: mysqldump.cnf.j2,   dest: conf.d/mysqldump.cnf,                when: yes }
       - { src: isamchk.cnf.j2,     dest: conf.d/isamchk.cnf,                  when: yes }
       - { src: innodb.cnf.j2,      dest: conf.d/innodb.cnf,                   when: yes }
-      - { src: passwords.cnf.j2,   dest: mysql.conf.d/passwords.cnf,          when: "{{ install_mysql }}" }
-      - { src: passwords.cnf.j2,   dest: percona-server.conf.d/passwords.cnf, when: "{{ install_percona }}" }
-      - { src: galera.cnf.j2,      dest: mariadb.conf.d/galera.cnf,           when: "{{ install_mariadb }}" }
+      - { src: passwords.cnf.j2,   dest: conf.d/passwords.cnf,                when: yes }
 
   - include: lockdown.yml
     when: mysql_installed | changed
