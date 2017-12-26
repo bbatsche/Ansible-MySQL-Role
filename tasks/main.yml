@@ -33,14 +33,14 @@
     when: item.when
     notify: Restart MySQL
     with_items:
-      - { src: my.cnf.j2,          dest: my.cnf,                              when: yes }
-      - { src: mysqld_safe.cnf.j2, dest: conf.d/mysqld_safe.cnf,              when: yes }
-      - { src: mysqld.cnf.j2,      dest: conf.d/mysqld.cnf,                   when: yes }
-      - { src: client.cnf.j2,      dest: conf.d/client.cnf,                   when: yes }
-      - { src: mysqldump.cnf.j2,   dest: conf.d/mysqldump.cnf,                when: yes }
-      - { src: isamchk.cnf.j2,     dest: conf.d/isamchk.cnf,                  when: yes }
-      - { src: innodb.cnf.j2,      dest: conf.d/innodb.cnf,                   when: yes }
-      - { src: passwords.cnf.j2,   dest: conf.d/passwords.cnf,                when: yes }
+      - { src: my.cnf.j2,          dest: my.cnf,                 when: yes }
+      - { src: mysqld_safe.cnf.j2, dest: conf.d/mysqld_safe.cnf, when: yes }
+      - { src: mysqld.cnf.j2,      dest: conf.d/mysqld.cnf,      when: yes }
+      - { src: client.cnf.j2,      dest: conf.d/client.cnf,      when: yes }
+      - { src: mysqldump.cnf.j2,   dest: conf.d/mysqldump.cnf,   when: yes }
+      - { src: isamchk.cnf.j2,     dest: conf.d/isamchk.cnf,     when: yes }
+      - { src: innodb.cnf.j2,      dest: conf.d/innodb.cnf,      when: yes }
+      - { src: passwords.cnf.j2,   dest: conf.d/passwords.cnf,   when: "{{ env_name != 'dev' }}" }
 
   - include: lockdown.yml
     when: mysql_installed | changed
