@@ -45,12 +45,11 @@ shared_examples "mysql security" do
 end
 
 shared_examples "mysql variable" do |variable, value|
-  let(:subject) { command(%Q{mysql -uvagrant -p#{mysql_password} -e "SHOW VARIABLES LIKE '#{variable}'"}) }
-  
   it "#{variable} is #{value}" do
-    expect(subject.stdout).to match /#{value}/
-  
-    # Can't use "no errors" since stderr may get a (totally valid) warning about passwords on the command line
-    expect(subject.exit_status).to eq 0
+    output = command(%Q{mysql -uvagrant -p#{mysql_password} -e "SHOW VARIABLES LIKE '#{variable}'"}).stdout
+    
+    subject = output.split("\n")[1].gsub(/#{Regexp.quote(variable)}\s+(.+)$/, '\1')
+    
+    expect(subject).to eq value
   end
 end

@@ -4,10 +4,11 @@
 # Read the manual for more InnoDB related options. There are many!
 default_storage_engine  = InnoDB
 
-innodb_buffer_pool_size = {{ innodb_buffer_pool_size | default((ansible_memtotal_mb * (mysql_mem_percent | default(40) / 100) * (innodb_buffer_pool_percent | default(90) / 100)) | int | string + "M") }}
-innodb_file_format      = Barracuda
-innodb_file_per_table   = 1
-innodb_flush_method     = O_DIRECT
-innodb_io_capacity      = {{ innodb_io_capacity | default("400") }}
-innodb_log_buffer_size  = {{ innodb_log_buffer_size | default("16M") }}
-innodb_strict_mode      = 1
+innodb_buffer_pool_size       = {{ innodb_buffer_pool_size | default((ansible_memtotal_mb * (mysql_mem_percent | default(40) / 100) * (innodb_buffer_pool_percent | default(90) / 100)) | int | string + "M") }}
+innodb_buffer_pool_chunk_size = {{ innodb_buffer_pool_chunk_size | default("128M") }}
+innodb_file_format            = Barracuda
+innodb_file_per_table         = 1
+innodb_flush_method           = O_DIRECT
+innodb_io_capacity            = {{ innodb_io_capacity | default("400") }}
+innodb_log_buffer_size        = {{ innodb_log_buffer_size | default("16M") }}
+innodb_strict_mode            = 1
