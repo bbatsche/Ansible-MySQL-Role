@@ -13,4 +13,6 @@ galaxy_info:
   - database
   - sql
   - mysql
+  - mariadb
+  - percona
 dependencies: []
