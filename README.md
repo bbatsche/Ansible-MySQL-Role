@@ -2,7 +2,7 @@ Ansible MySQL Role
 ==========================
 
 [![Build Status](https://travis-ci.org/bbatsche/Ansible-MySQL-Role.svg)](https://travis-ci.org/bbatsche/Ansible-MySQL-Role)
-[![Ansible Galaxy](https://img.shields.io/ansible/role/6893.svg)](https://galaxy.ansible.com/bbatsche/MySQL-Install)
+[![Ansible Galaxy](https://img.shields.io/ansible/role/6893.svg)](https://galaxy.ansible.com/bbatsche/MySQL)
 
 This role will install & configure MySQL, MariaDB, or Percona server and/or create databases & users for those servers.
 
