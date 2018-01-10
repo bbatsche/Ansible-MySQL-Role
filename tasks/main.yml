@@ -48,4 +48,4 @@
 
 - include: user.yml
   static: no
-  when: db_name is defined or (new_db_user is defined and new_db_pass is defined)
+  when: new_db_name is defined or (new_db_user is defined and new_db_pass is defined)

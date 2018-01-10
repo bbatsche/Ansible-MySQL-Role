@@ -4,6 +4,11 @@
   vars_files:
     - defaults/main.yml
 
+  vars:
+    new_db_name: test_db
+    new_db_user: test_user
+    new_db_pass: password123
+
   pre_tasks:
     - name: Get ENV
       set_fact: install_which={{ lookup('env', 'INSTALL') }}

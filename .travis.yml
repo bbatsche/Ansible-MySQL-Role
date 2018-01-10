@@ -12,18 +12,25 @@ cache:
     - $HOME/.cache/pip
 
 env:
+  # Just run all the specs
   - ANSIBLE_VERSION="2.1"
   - ANSIBLE_VERSION="2.2"
   - ANSIBLE_VERSION="2.3"
   - ANSIBLE_VERSION="2.4"
+  
+  # Idempotence test for MySQL
   - ANSIBLE_VERSION="2.1" INSTALL=mysql
   - ANSIBLE_VERSION="2.2" INSTALL=mysql
   - ANSIBLE_VERSION="2.3" INSTALL=mysql
   - ANSIBLE_VERSION="2.4" INSTALL=mysql
+  
+  # Idempotence test for MariaDB
   - ANSIBLE_VERSION="2.1" INSTALL=mariadb
   - ANSIBLE_VERSION="2.2" INSTALL=mariadb
   - ANSIBLE_VERSION="2.3" INSTALL=mariadb
   - ANSIBLE_VERSION="2.4" INSTALL=mariadb
+  
+  # Idempotence test for Percona
   - ANSIBLE_VERSION="2.1" INSTALL=percona
   - ANSIBLE_VERSION="2.2" INSTALL=percona
   - ANSIBLE_VERSION="2.3" INSTALL=percona

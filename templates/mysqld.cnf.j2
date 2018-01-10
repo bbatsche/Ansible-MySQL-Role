@@ -58,7 +58,7 @@ log_queries_not_using_indexes = 1
 {% endif %}
 
 # * Character Set & Collation
-character_set_server = utf8
-collation_server     = utf8_general_ci
+character_set_server = utf8mb4
+collation_server     = utf8mb4_general_ci
 
 sql_mode = {{ mysql_sql_mode | default('ANSI,TRADITIONAL')}}
