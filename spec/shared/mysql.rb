@@ -22,7 +22,7 @@ end
 
 shared_examples "mysql security" do
   describe "Default Admin User" do
-    let(:subject) { command(%Q{mysql -uvagrant -pvagrant -e "SELECT 'MySQL Installed'"}) }
+    let(:subject) { command(%Q{mysql -Nqs -uvagrant -pvagrant -e "SELECT 'MySQL Installed'"}) }
 
     it "allows admin access to database" do
       expect(subject.stdout).to match /MySQL Installed/
@@ -46,9 +46,9 @@ end
 
 shared_examples "mysql variable" do |variable, value|
   it "#{variable} is #{value}" do
-    output = command(%Q{mysql -uvagrant -p#{mysql_password} -e "SHOW VARIABLES LIKE '#{variable}'"}).stdout
+    output = command(%Q{mysql -Nqs -uvagrant -p#{mysql_password} -e "SHOW VARIABLES LIKE '#{variable}'"}).stdout
     
-    subject = output.split("\n")[1].gsub(/#{Regexp.quote(variable)}\s+(.+)$/, '\1')
+    subject = output.strip.gsub(/#{Regexp.quote(variable)}\s+(.+)$/, '\1')
     
     expect(subject).to eq value
   end

@@ -14,7 +14,7 @@ RSpec.configure do |config|
 end
 
 describe "New DB user" do
-  let(:subject) { command('mysql -utest_db_owner -ppassword123 -e "CREATE TABLE test_db.test_table (id INTEGER PRIMARY KEY)"') }
+  let(:subject) { command('mysql -Nqs -utest_db_owner -ppassword123 -e "CREATE TABLE test_db.test_table (id INTEGER PRIMARY KEY)"') }
   
   it "should not be able to create tables" do
     expect(subject.stderr).to match /CREATE command denied to user 'test_db_owner'@'localhost'/

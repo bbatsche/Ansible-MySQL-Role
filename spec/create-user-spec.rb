@@ -12,7 +12,7 @@ RSpec.configure do |config|
 end
 
 describe "New DB user" do
-  let(:subject) { command(%Q{mysql -utest_user -ppassword123 -e "SELECT count(*) FROM mysql.user WHERE User = 'test_user'"}) }
+  let(:subject) { command(%Q{mysql -Nqs -utest_user -ppassword123 -e "SELECT count(*) FROM mysql.user WHERE User = 'test_user'"}) }
   
   it "should exist" do
     expect(subject.stdout).to match /^1$/

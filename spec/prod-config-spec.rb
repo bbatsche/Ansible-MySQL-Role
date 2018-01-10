@@ -25,7 +25,7 @@ end
 describe "MySQL plugins" do
   let(:mysql_password) { "Secure123!" }
   
-  let(:subject) { command(%Q{mysql -uvagrant -p#{mysql_password} -e "SHOW PLUGINS"}) }
+  let(:subject) { command(%Q{mysql -Nqs -uvagrant -p#{mysql_password} -e "SHOW PLUGINS"}) }
 
   it "includes password validation" do
     expect(subject.stdout).to match /validate_password\s+ACTIVE/

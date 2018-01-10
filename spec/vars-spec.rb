@@ -10,46 +10,41 @@ RSpec.configure do |config|
       innodb_buffer_pool_chunk_size: "1M",
       mysql_key_buffer_percent:      20,
       mysql_enable_network:          true,
-      mysql_sql_mode:                "ANSI,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION"
+      mysql_sql_mode:                "TRADITIONAL"
     })
   end
 end
 
 context "MySQL variables" do
   let(:mysql_password) { "vagrant" }
-  
-  totalMem = host_inventory["memory"]["total"].to_i
+  let(:totalMem) { host_inventory["memory"]["total"].to_i }
   
   describe "InnoDB buffer pool size" do
-    output = command(%Q{mysql -uvagrant -pvagrant -e "SHOW VARIABLES LIKE 'innodb_buffer_pool_size'"}).stdout
-    
-    let(:subject) { output.split("\n")[1].gsub(/innodb_buffer_pool_size\s+(.+)$/, '\1') }
+    let(:subject) { command(%Q{mysql -Nqs -uvagrant -pvagrant -e "SHOW VARIABLES LIKE 'innodb_buffer_pool_size'"}) }
     
     it "is set based on total memory" do
-      expect(subject.to_i / 1024).to be_within(1024).of((totalMem * 0.8 * 0.6).to_i)
+      expect(subject.stdout.gsub(/innodb_buffer_pool_size\s+(.+)$/, '\1').to_i / 1024).to be_within(2048).of((totalMem * 0.8 * 0.6).to_i)
     end
   end
   
   describe "Key buffer size" do
-    output = command(%Q{mysql -uvagrant -pvagrant -e "SHOW VARIABLES LIKE 'key_buffer_size'"}).stdout
-    
-    let(:subject) { output.split("\n")[1].gsub(/key_buffer_size\s+(.+)$/, '\1') }
+    let(:subject) { command(%Q{mysql -Nqs -uvagrant -pvagrant -e "SHOW VARIABLES LIKE 'key_buffer_size'"}) }
     
     it "is set based on total memory" do
-      expect(subject.to_i / 1024).to be_within(1024).of((totalMem * 0.8 * 0.2).to_i)
+      expect(subject.stdout.gsub(/key_buffer_size\s+(.+)$/, '\1').to_i / 1024).to be_within(2048).of((totalMem * 0.8 * 0.2).to_i)
     end
   end
   
   describe "SQL mode" do
-    output = command(%Q{mysql -uvagrant -pvagrant -e "SHOW VARIABLES LIKE 'sql_mode'"}).stdout
-    
-    let(:subject) { output.split("\n")[1].gsub(/sql_mode\s+(.+)$/, '\1') }
+    let(:subject) { command(%Q{mysql -Nqs -uvagrant -pvagrant -e "SHOW VARIABLES LIKE 'sql_mode'"}) }
     
     it "is set in config" do
-      expect(subject).to match /PIPES_AS_CONCAT/
-      expect(subject).to match /ANSI_QUOTES/
-      # expect(subject).not_to match /NO_ZERO_DATE/
-      expect(subject).not_to match /NO_ZERO_IN_DATE/
+      expect(subject.stdout.gsub(/sql_mode\s+(.+)$/, '\1')).not_to match /REAL_AS_FLOAT/
+      expect(subject.stdout.gsub(/sql_mode\s+(.+)$/, '\1')).not_to match /PIPES_AS_CONCAT/
+      expect(subject.stdout.gsub(/sql_mode\s+(.+)$/, '\1')).not_to match /ANSI_QUOTES/
+      
+      expect(subject.stdout.gsub(/sql_mode\s+(.+)$/, '\1')).to match /STRICT_TRANS_TABLES/
+      expect(subject.stdout.gsub(/sql_mode\s+(.+)$/, '\1')).to match /STRICT_ALL_TABLES/
     end
   end
   

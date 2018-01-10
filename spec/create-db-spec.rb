@@ -13,7 +13,7 @@ RSpec.configure do |config|
 end
 
 describe "New database" do
-  let(:subject) { command('mysql -utest_db_owner -ppassword123 -e "SHOW CREATE DATABASE test_db"') }
+  let(:subject) { command('mysql -Nqs -utest_db_owner -ppassword123 -e "SHOW CREATE DATABASE test_db"') }
   
   it "should exist" do
     expect(subject.stdout).to match /CREATE DATABASE "|`test_db"|`/
@@ -25,7 +25,7 @@ describe "New database" do
 end
 
 describe "New DB user" do
-  let(:subject) { command(%Q{mysql -utest_db_owner -ppassword123 -e "SELECT count(*) FROM mysql.user WHERE User = 'test_db_owner'"}) }
+  let(:subject) { command(%Q{mysql -Nqs -utest_db_owner -ppassword123 -e "SELECT count(*) FROM mysql.user WHERE User = 'test_db_owner'"}) }
   
   it "should not be able to query other DBs" do
     expect(subject.stderr).to match /SELECT command denied to user 'test_db_owner'@'localhost'/
