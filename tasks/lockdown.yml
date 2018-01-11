@@ -15,12 +15,14 @@
   mysql_user:
     name:           "{{ db_admin }}"
     password:       "{{ db_pass }}"
+    host:           "{{ item }}"
     login_user:     root
     login_password: ""
     priv:           "*.*:ALL,GRANT"
     state:          present
   become: yes
   when: mysql_admin_access.msg | search("Access denied for user")
+  with_items: "{{ local_hosts }}"
 
 - name: Remove Root User
   mysql_user:
@@ -29,8 +31,4 @@
     login_user:     "{{ db_admin }}"
     login_password: "{{ db_pass }}"
     state:          absent
-  with_items:
-    - localhost
-    - 127.0.0.1
-    - "::1"
-    - "{{ ansible_hostname }}"
+  with_items: "{{ local_hosts }}"

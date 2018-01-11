@@ -3,6 +3,7 @@
 
   vars_files:
     - defaults/main.yml
+    - vars/main.yml
 
   vars:
     new_db_name: test_db
