@@ -43,7 +43,9 @@
       - { src: passwords.cnf.j2,   dest: conf.d/passwords.cnf,   when: "{{ env_name != 'dev' }}" }
 
   - include: lockdown.yml
-    when: mysql_installed | changed
+    when:
+      - mysql_installed is defined
+      - mysql_installed is changed
   when: install_mysql or install_mariadb or install_percona
 
 - include: user.yml
