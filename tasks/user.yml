@@ -18,4 +18,5 @@
     login_password: "{{ db_pass }}"
     priv:           "{{ new_db_priv | default(new_db_name + '.*:ALL' if new_db_name is defined else '*.*:ALL,GRANT') }}"
     state:          present
+    append_privs:   yes
   with_items: "{{ local_hosts }}"
