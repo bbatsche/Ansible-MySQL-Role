@@ -20,7 +20,7 @@ class DockerEnv
 
     inventory.close
 
-    `ansible-playbook -i #{inventory.path} -l #{@name} provision-playbook.yml --skip-tags="timezone,ruby,node,acl"`
+    `ansible-playbook -i #{inventory.path} -l #{@name} provision-playbook.yml`
   ensure
     inventory.unlink unless inventory.nil?
   end
@@ -36,7 +36,7 @@ class DockerEnv
   def container
     @container \
       || @container = Docker::Container.all(all: true, filters: { name: [name] }.to_json).first \
-      || @container = Docker::Container.create('Cmd' => ['sleep', 'infinity'], 'Image' => image, 'name' => name, 'Privileged' => true)
+      || @container = Docker::Container.create("Cmd" => ["/sbin/init"], "Image" => image.id, "name" => name)
   end
 
   def id
