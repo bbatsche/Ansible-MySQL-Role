@@ -53,7 +53,7 @@
         - /etc/mysql
 
   tasks:
-    - include: ../../tasks/main.yml
+    - import_tasks: ../../tasks/main.yml
 
   handlers:
-    - include: ../../handlers/main.yml
+    - import_tasks: ../../handlers/main.yml

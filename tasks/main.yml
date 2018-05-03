@@ -1,14 +1,11 @@
 ---
-- include: install_mysql.yml
-  static: no
+- include_tasks: install_mysql.yml
   when: install_mysql
 
-- include: install_mariadb.yml
-  static: no
+- include_tasks: install_mariadb.yml
   when: install_mariadb
 
-- include: install_percona.yml
-  static: no
+- include_tasks: install_percona.yml
   when: install_percona
 
 - block:
@@ -48,6 +45,5 @@
       - mysql_installed is changed
   when: install_mysql or install_mariadb or install_percona
 
-- include: user.yml
-  static: no
+- include_tasks: user.yml
   when: new_db_name is defined or (new_db_user is defined and new_db_pass is defined)
