@@ -1,13 +1,28 @@
 ---
+- name: Enable Selected MySQL Version
+  debconf:
+    name: mysql-apt-config
+    question: mysql-apt-config/select-server
+    value: mysql-{{ mysql_version }}
+    vtype: select
+  become: yes
+
 - name: Add MySQL Package
   apt: deb={{ mysql_deb }}
   become: yes
 
-- name: Install MySQL
+- name: Install MySQL & Python Libraries
   apt: name={{ item }} state=present update_cache=yes
   become: yes
   register: mysql_installed
   with_items:
     - mysql-server
     - libmysqlclient-dev
-    - python-mysqldb
+    - "{{ 'libmysqlclient21' if mysql_version == '8.0' else 'libmysqlclient20' }}"
+    - python-pip
+    - libssl-dev
+
+# MySQLdb 1.3.12 is not yet compatible with MySQL 8.0
+- name: Install Python MySQL Adapter
+  pip: name=git+https://github.com/PyMySQL/mysqlclient-python.git state=latest
+  become: yes
