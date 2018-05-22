@@ -20,6 +20,7 @@
     - libmysqlclient-dev
     - "{{ 'libmysqlclient21' if mysql_version == '8.0' else 'libmysqlclient20' }}"
     - python-pip
+    - python-dev
     - libssl-dev
     - git
 
