@@ -11,12 +11,13 @@
 
 - name: Create User
   mysql_user:
-    name:           "{{ new_db_user }}"
-    password:       "{{ new_db_pass }}"
-    host:           "{{ item }}"
-    login_user:     "{{ db_admin }}"
-    login_password: "{{ db_pass }}"
-    priv:           "{{ new_db_priv | default(new_db_name + '.*:ALL' if new_db_name is defined else '*.*:ALL,GRANT') }}"
-    state:          present
-    append_privs:   yes
+    name:            "{{ new_db_user }}"
+    password:        "{{ new_db_pass }}"
+    update_password: on_create
+    host:            "{{ item }}"
+    login_user:      "{{ db_admin }}"
+    login_password:  "{{ db_pass }}"
+    priv:            "{{ new_db_priv | default(new_db_name + '.*:ALL' if new_db_name is defined else '*.*:ALL,GRANT') }}"
+    state:           present
+    append_privs:    yes
   with_items: "{{ local_hosts }}"
