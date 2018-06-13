@@ -43,7 +43,7 @@
       - { src: passwords.cnf.j2,   dest: conf.d/passwords.cnf,   when: "{{ env_name != 'dev' }}" }
 
   - name: Secure Server
-    include: lockdown.yml
+    include_tasks: lockdown.yml
     when:
       - mysql_installed is defined
       - mysql_installed is changed
