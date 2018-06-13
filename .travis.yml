@@ -1,86 +1,84 @@
 ---
 sudo: required
-dist: trusty
 
 services:
   - docker
 
 language: generic
 cache:
-  bundler: true
-  pip: true
-  apt: true
   directories:
-    - $HOME/.ansible/roles
+    - vendor/bundle
+    - $HOME/.cache/pip
+    - $HOME/.local
+    - roles
 
 env:
-  # Just run all the specs
-  - ANSIBLE_VERSION="2.1" TARGET_HOST=trusty
-  - ANSIBLE_VERSION="2.2" TARGET_HOST=trusty
-  - ANSIBLE_VERSION="2.3" TARGET_HOST=trusty
-  - ANSIBLE_VERSION="2.4" TARGET_HOST=trusty
-  - ANSIBLE_VERSION="2.1" TARGET_HOST=xenial
-  - ANSIBLE_VERSION="2.2" TARGET_HOST=xenial
-  - ANSIBLE_VERSION="2.3" TARGET_HOST=xenial
-  - ANSIBLE_VERSION="2.4" TARGET_HOST=xenial
-  
-  # Idempotence test for MySQL
-  - ANSIBLE_VERSION="2.1" INSTALL=mysql
-  - ANSIBLE_VERSION="2.2" INSTALL=mysql
-  - ANSIBLE_VERSION="2.3" INSTALL=mysql
-  - ANSIBLE_VERSION="2.4" INSTALL=mysql
-  
-  # Idempotence test for MariaDB
-  - ANSIBLE_VERSION="2.1" INSTALL=mariadb
-  - ANSIBLE_VERSION="2.2" INSTALL=mariadb
-  - ANSIBLE_VERSION="2.3" INSTALL=mariadb
-  - ANSIBLE_VERSION="2.4" INSTALL=mariadb
-  
-  # Idempotence test for Percona
-  - ANSIBLE_VERSION="2.1" INSTALL=percona
-  - ANSIBLE_VERSION="2.2" INSTALL=percona
-  - ANSIBLE_VERSION="2.3" INSTALL=percona
-  - ANSIBLE_VERSION="2.4" INSTALL=percona
+  # - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=trusty TEST_SUITE=idempotence INSTALL=mysql
+  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=trusty TEST_SUITE=idempotence INSTALL=mariadb
+  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=trusty TEST_SUITE=idempotence INSTALL=percona
+
+  # - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=trusty TEST_SUITE=idempotence INSTALL=mysql
+  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=trusty TEST_SUITE=idempotence INSTALL=mariadb
+  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=trusty TEST_SUITE=idempotence INSTALL=percona
+
+  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=xenial TEST_SUITE=idempotence INSTALL=mysql
+  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=xenial TEST_SUITE=idempotence INSTALL=mariadb
+  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=xenial TEST_SUITE=idempotence INSTALL=percona
+
+  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=xenial TEST_SUITE=idempotence INSTALL=mysql
+  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=xenial TEST_SUITE=idempotence INSTALL=mariadb
+  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=xenial TEST_SUITE=idempotence INSTALL=percona
+
+  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mysql
+  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mariadb
+  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=percona
+
+  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mysql
+  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mariadb
+  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=percona
+
+  # - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=trusty TEST_SUITE=spec
+  # - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=trusty TEST_SUITE=spec
+  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=xenial TEST_SUITE=spec
+  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=xenial TEST_SUITE=spec
+  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=bionic TEST_SUITE=spec
+  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=bionic TEST_SUITE=spec
 
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -y -o Dpkg::Options::="--force-confold" docker-ce
+  - docker pull ubuntu:${ENVIRONMENT_NAME}
 
-  - docker pull ubuntu:trusty
-  - docker pull ubuntu:xenial
-
-  - travis_retry bundle install
+  - travis_retry bundle install --deployment
 
 install:
-  - travis_retry sudo -H pip install ansible==${ANSIBLE_VERSION}.*
+  - travis_retry pip install --user -U ansible==${ANSIBLE_VERSION}.*
 
-  - travis_retry sudo ansible-galaxy install bbatsche.Base
+  - travis_retry ansible-galaxy install -r roles.yml
 
   - mkdir -p $HOME/.ansible
   - sudo chown -R $USER:$USER $HOME/.ansible
 
-  - travis_wait rake environment:provision
+  - travis_wait bundle exec rake environment:${ENVIRONMENT_NAME}:provision
 
 script:
   # Syntax check
-  - if [[ -n "$INSTALL" ]]; then ansible-playbook travis-playbook.yml --syntax-check; fi
+  - if [ $TEST_SUITE = "idempotence" ]; then ansible-playbook travis-playbook.yml --syntax-check; fi
 
   # Play test
-  - if [[ -n "$INSTALL" ]]; then rake ansible:playbook[travis-playbook.yml]; fi
+  - if [ $TEST_SUITE = "idempotence" ]; then bundle exec rake ansible:playbook:$ENVIRONMENT_NAME[travis-playbook.yml]; fi
 
   # Idempotence test
-  - if [[ -n "$INSTALL" ]]; then rake ansible:playbook[travis-playbook.yml] > idempotence.out; fi
+  - if [ $TEST_SUITE = "idempotence" ]; then bundle exec rake ansible:playbook:$ENVIRONMENT_NAME[travis-playbook.yml] > idempotence.out; fi
   - >
-    if [[ -n "$INSTALL" ]]; then
+    if [ $TEST_SUITE = "idempotence" ]; then
     grep -q "changed=0.*failed=0" idempotence.out
     && (echo "Idempotence test: pass" && exit 0) || (echo "Idempotence test: fail" && cat idempotence.out && exit 1);
     fi
 
   # Serverspec
-  - if [[ -z "$INSTALL" ]]; then rake spec:$TARGET_HOST; fi
+  - if [ $TEST_SUITE = "spec" ]; then bundle exec rake spec:$ENVIRONMENT_NAME; fi
 
 after_script:
-  - rake environment:destroy
+  - bundle exec rake environment:destroy
 
 notifications:
     webhooks: https://galaxy.ansible.com/api/v1/notifications/

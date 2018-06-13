@@ -1,4 +1,4 @@
-require_relative "bootstrap"
+require_relative "lib/bootstrap"
 
 RSpec.configure do |config|
   config.before :suite do
@@ -8,7 +8,7 @@ end
 
 describe "MySQL" do
   include_examples "mysql server"
-  include_examples("mysql client", "5.7")
+  include_examples("mysql client", "8.0")
 end
 
 describe "User Access" do

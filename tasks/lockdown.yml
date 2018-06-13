@@ -21,7 +21,7 @@
     priv:           "*.*:ALL,GRANT"
     state:          present
   become: yes
-  when: mysql_admin_access.msg | search("Access denied for user")
+  when: "'Access denied for user' in mysql_admin_access.msg"
   with_items: "{{ local_hosts }}"
 
 - name: Remove Root User

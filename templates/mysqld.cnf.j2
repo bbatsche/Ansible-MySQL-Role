@@ -41,10 +41,12 @@ key_buffer_size         = {{ mysql_key_buffer_size | default((ansible_memtotal_m
 myisam_recover_options  = BACKUP
 myisam_sort_buffer_size = {{ myisam_sort_buffer_size | default("128M") }}
 
+{% if not install_mysql or mysql_version == "5.7" %}
 # * Query Cache Configuration
 query_cache_type  = {{ mysql_query_cache_type  | default("ON") }}
 query_cache_limit = {{ mysql_query_cache_limit | default("1M") }}
 query_cache_size  = {{ mysql_query_cache_size  | default("32M" if mysql_query_cache_type is not defined or mysql_query_cache_type != "0" or mysql_query_cache_type != "OFF" else "0") }}
+{% endif %}
 
 # Error log - should be very few entries.
 log_error = /var/log/mysql/error.log
