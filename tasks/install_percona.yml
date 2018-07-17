@@ -10,4 +10,4 @@
   with_items:
     - percona-server-server-{{ percona_version }}
     - libmysqlclient-dev
-    - python-mysqldb
+    - "{{ 'python3-mysqldb' if ansible_python.version.major == 3 else 'python-mysqldb' }}"

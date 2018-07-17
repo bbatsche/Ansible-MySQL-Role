@@ -19,8 +19,8 @@
     - mysql-server
     - libmysqlclient-dev
     - "{{ 'libmysqlclient21' if mysql_version == '8.0' else 'libmysqlclient20' }}"
-    - python-pip
-    - python-dev
+    - "{{ 'python3-pip' if ansible_python.version.major == 3 else 'python-pip' }}"
+    - "{{ 'python3-dev' if ansible_python.version.major == 4 else 'python-dev' }}"
     - libssl-dev
     - git
 
