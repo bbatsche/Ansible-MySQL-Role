@@ -15,7 +15,7 @@ mariadb_apt_key:
   trusty: "0xcbcb082a1bb943db"
   xenial: "0xF1656F24C74CD1D8"
   bionic: "0xF1656F24C74CD1D8"
-mariadb_version: "10.2"
+mariadb_version: "10.3"
 mariadb_apt_mirror: http://nyc2.mirrors.digitalocean.com
 
 percona_deb: https://repo.percona.com/apt/percona-release_0.1-5.{{ ansible_distribution_release }}_all.deb
