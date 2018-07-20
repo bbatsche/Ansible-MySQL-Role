@@ -8,7 +8,7 @@ end
 
 describe "MariaDB" do
   include_examples "mysql server"
-  include_examples("mysql client", "10.2")
+  include_examples("mysql client", "10.3")
 end
 
 describe "User Access" do
