@@ -17,4 +17,4 @@
   with_items:
     - mariadb-server
     - libmariadb-dev
-    - python-mysqldb
+    - "{{ 'python3-mysqldb' if ansible_python.version.major == 3 else 'python-mysqldb' }}"
