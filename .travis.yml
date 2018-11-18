@@ -15,52 +15,66 @@ cache:
     - $HOME/.local
     - roles
 
-env:
-  # - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=trusty TEST_SUITE=idempotence INSTALL=mysql
-  - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=trusty TEST_SUITE=idempotence INSTALL=mariadb
-  - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=trusty TEST_SUITE=idempotence INSTALL=percona
-
-  - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=xenial TEST_SUITE=idempotence INSTALL=mysql
-  - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=xenial TEST_SUITE=idempotence INSTALL=mariadb
-  - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=xenial TEST_SUITE=idempotence INSTALL=percona
-
-  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mysql
-  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mariadb
-  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=percona
-
-  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mysql
-  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mariadb
-  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=percona
-
-  - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mysql
-  - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mariadb
-  - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=percona
-
-  # - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=trusty TEST_SUITE=spec
-  - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=xenial TEST_SUITE=spec
-  - ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=bionic TEST_SUITE=spec
-  - ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=bionic TEST_SUITE=spec
-  - ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=bionic TEST_SUITE=spec
-
-matrix:
-  allow_failures:
-    - python: "2.7"
-      env: ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mariadb
-    - python: "2.7"
-      env: ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=bionic TEST_SUITE=spec
-    - python: "3.6"
-      env: ANSIBLE_VERSION="2.6" ANSIBLE_PYTHON_VERSION=3 ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mariadb
-    - python: "3.6"
-      env: ANSIBLE_VERSION="2.6" ANSIBLE_PYTHON_VERSION=3 ENVIRONMENT_NAME=bionic TEST_SUITE=spec
+jobs:
   include:
-    - python: "3.6"
-      env: ANSIBLE_VERSION="2.6" ANSIBLE_PYTHON_VERSION=3 ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mysql
-    - python: "3.6"
-      env: ANSIBLE_VERSION="2.6" ANSIBLE_PYTHON_VERSION=3 ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=mariadb
-    - python: "3.6"
-      env: ANSIBLE_VERSION="2.6" ANSIBLE_PYTHON_VERSION=3 ENVIRONMENT_NAME=bionic TEST_SUITE=idempotence INSTALL=percona
-    - python: "3.6"
-      env: ANSIBLE_VERSION="2.6" ANSIBLE_PYTHON_VERSION=3 ENVIRONMENT_NAME=bionic TEST_SUITE=spec
+    - stage: Spec
+      name: Trusty
+      env: ANSIBLE_VERSION="2.7" ENVIRONMENT_NAME=trusty
+      script: bundle exec rake spec:$ENVIRONMENT_NAME
+    - name: Xenial
+      env: ANSIBLE_VERSION="2.7" ENVIRONMENT_NAME=xenial
+      script: bundle exec rake spec:$ENVIRONMENT_NAME
+    - name: Bionic
+      env: ANSIBLE_VERSION="2.7" ENVIRONMENT_NAME=bionic
+      script: bundle exec rake spec:$ENVIRONMENT_NAME
+
+    - name: Ansible 2.4
+      env: ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=bionic
+      script: bundle exec rake spec:$ENVIRONMENT_NAME
+    - name: Ansible 2.5
+      env: ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=bionic
+      script: bundle exec rake spec:$ENVIRONMENT_NAME
+    - name: Ansible 2.6
+      env: ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=bionic
+      script: bundle exec rake spec:$ENVIRONMENT_NAME
+
+    - name: Python 3
+      env: ANSIBLE_VERSION="2.7" ENVIRONMENT_NAME=bionic ANSIBLE_PYTHON_VERSION=3
+      python: 3.6
+      script: bundle exec rake spec:$ENVIRONMENT_NAME
+
+    - stage: Idempotence
+      name: Trusty
+      env: ANSIBLE_VERSION="2.7" ENVIRONMENT_NAME=trusty INSTALL=mysql
+      script: ./idempotence.sh
+    - name: Xenial
+      env: ANSIBLE_VERSION="2.7" ENVIRONMENT_NAME=xenial INSTALL=mysql
+      script: ./idempotence.sh
+    - name: Bionic
+      env: ANSIBLE_VERSION="2.7" ENVIRONMENT_NAME=bionic INSTALL=mysql
+      script: ./idempotence.sh
+
+    - name: MariaDB
+      env: ANSIBLE_VERSION="2.7" ENVIRONMENT_NAME=bionic INSTALL=mariadb
+      script: ./idempotence.sh
+    - name: Percona
+      env: ANSIBLE_VERSION="2.7" ENVIRONMENT_NAME=bionic INSTALL=percona
+      script: ./idempotence.sh
+
+    - name: Ansible 2.4
+      env: ANSIBLE_VERSION="2.4" ENVIRONMENT_NAME=bionic INSTALL=mysql
+      script: ./idempotence.sh
+    - name: Ansible 2.5
+      env: ANSIBLE_VERSION="2.5" ENVIRONMENT_NAME=bionic INSTALL=mysql
+      script: ./idempotence.sh
+    - name: Ansible 2.6
+      env: ANSIBLE_VERSION="2.6" ENVIRONMENT_NAME=bionic INSTALL=mysql
+      script: ./idempotence.sh
+
+    - name: Python 3
+      env: ANSIBLE_VERSION="2.7" ENVIRONMENT_NAME=bionic INSTALL=mysql ANSIBLE_PYTHON_VERSION=3
+      python: 3.6
+      script: ./idempotence.sh
 
 before_install:
   - docker pull ubuntu:${ENVIRONMENT_NAME}
@@ -73,24 +87,6 @@ install:
   - travis_retry ansible-galaxy install -r roles.yml
 
   - travis_wait bundle exec rake environment:${ENVIRONMENT_NAME}:provision
-
-script:
-  # Syntax check
-  - if [ $TEST_SUITE = "idempotence" ]; then ansible-playbook travis-playbook.yml --syntax-check; fi
-
-  # Play test
-  - if [ $TEST_SUITE = "idempotence" ]; then bundle exec rake ansible:playbook:$ENVIRONMENT_NAME[travis-playbook.yml]; fi
-
-  # Idempotence test
-  - if [ $TEST_SUITE = "idempotence" ]; then bundle exec rake ansible:playbook:$ENVIRONMENT_NAME[travis-playbook.yml] > idempotence.out; fi
-  - >
-    if [ $TEST_SUITE = "idempotence" ]; then
-    grep -q "changed=0.*failed=0" idempotence.out
-    && (echo "Idempotence test: pass" && exit 0) || (echo "Idempotence test: fail" && cat idempotence.out && exit 1);
-    fi
-
-  # Serverspec
-  - if [ $TEST_SUITE = "spec" ]; then bundle exec rake spec:$ENVIRONMENT_NAME; fi
 
 after_script:
   - bundle exec rake environment:destroy
