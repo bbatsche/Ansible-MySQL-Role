@@ -3,3 +3,16 @@ local_hosts:
   - localhost
   - 127.0.0.1
   - "::1"
+
+mariadb_apt_packages:
+  - mariadb-server
+  - libmariadb-dev
+
+mysql_apt_packages:
+  - mysql-server
+  - libmysqlclient-dev
+  - "{{ 'libmysqlclient21' if mysql_version == '8.0' else 'libmysqlclient20' }}"
+
+percona_apt_packages:
+  - percona-server-server-{{ percona_version }}
+  - libmysqlclient-dev

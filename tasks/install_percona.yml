@@ -4,10 +4,6 @@
   become: yes
 
 - name: Install Percona Server
-  apt: name={{ item }} state=present update_cache=yes
+  apt: name={{ percona_apt_packages }} state=present update_cache=yes
   become: yes
   register: mysql_installed
-  with_items:
-    - percona-server-server-{{ percona_version }}
-    - libmysqlclient-dev
-    - "{{ 'python3-mysqldb' if ansible_python.version.major == 3 else 'python-mysqldb' }}"
