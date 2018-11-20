@@ -10,7 +10,7 @@ config_data = YAML.load_file default_config_file
 config_data = Vagrant::Util::DeepMerge.deep_merge(config_data, YAML.load_file(local_config_file)) if File.exists? local_config_file
 
 Vagrant.configure("2") do |config|
-  ["trusty", "xenial", "bionic"].each do |distro|
+  ["xenial", "bionic"].each do |distro|
     config.vm.define distro do |target_env|
       vm_config = Vagrant::Util::DeepMerge.deep_merge config_data["vm"]["global"], config_data["vm"][distro]
 
@@ -48,7 +48,7 @@ Vagrant.configure("2") do |config|
     ansible.extra_vars = config_data["ansible"]["vars"]
 
     ansible.groups = {
-      "vagrant" => ["trusty", "xenial", "bionic"]
+      "vagrant" => ["xenial", "bionic"]
     }
 
     ansible.groups["vagrant:vars"] = { "ansible_python_interpreter" => "/usr/bin/python3" } if ENV["ANSIBLE_PYTHON_VERSION"] == "3"

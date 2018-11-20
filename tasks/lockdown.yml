@@ -5,30 +5,30 @@
 
 - name: Check Administrator Access
   mysql_variables:
-    variable:       hostname
-    login_user:     "{{ db_admin }}"
-    login_password: "{{ db_pass }}"
+    variable:          hostname
+    login_user:        "{{ db_admin }}"
+    login_password:    "{{ db_pass }}"
+    login_unix_socket: "{{ mysql_socket }}"
   failed_when: no
   register: mysql_admin_access
 
 - name: Create Administrator
   mysql_user:
-    name:           "{{ db_admin }}"
-    password:       "{{ db_pass }}"
-    host:           "{{ item }}"
-    login_user:     root
-    login_password: ""
-    priv:           "*.*:ALL,GRANT"
-    state:          present
+    name:              "{{ db_admin }}"
+    password:          "{{ db_pass }}"
+    host:              "{{ item }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    priv:              "*.*:ALL,GRANT"
+    state:             present
   become: yes
   when: "'Access denied for user' in mysql_admin_access.msg"
-  with_items: "{{ local_hosts }}"
+  loop: "{{ local_hosts }}"
 
 - name: Remove Root User
   mysql_user:
-    name:           root
-    host:           "{{ item }}"
-    login_user:     "{{ db_admin }}"
-    login_password: "{{ db_pass }}"
-    state:          absent
-  with_items: "{{ local_hosts + [ ansible_hostname ] }}"
+    name:              root
+    host_all:          yes
+    login_user:        "{{ db_admin }}"
+    login_password:    "{{ db_pass }}"
+    login_unix_socket: "{{ mysql_socket }}"
+    state:             absent

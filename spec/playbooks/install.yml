@@ -12,26 +12,31 @@
       ignore_errors: yes # service may not have been installed yet
 
     - name: Uninstall MySQL
-      apt: name={{ item }} state=absent purge=yes autoremove=yes
+      apt:
+        name: ['mysql-*', 'libmysql*', 'python-mysqldb']
+        state: absent
+        purge: yes
+        autoremove: yes
       become: yes
       ignore_errors: yes # may not have installed one of the external repos yet
-      with_items:
-        - mysql-*
-        - libmysql*
-        - python-mysqldb
+
     - name: Uninstall MariaDB
-      apt: name={{ item }} state=absent purge=yes autoremove=yes
+      apt:
+        name: ['mariadb-*', 'libmariadb*']
+        state: absent
+        purge: yes
+        autoremove: yes
       become: yes
       ignore_errors: yes # may not have installed one of the external repos yet
-      with_items:
-        - mariadb-*
-        - libmariadb*
+
     - name: Uninstall Percona
-      apt: name={{ item }} state=absent purge=yes autoremove=yes
+      apt:
+        name: percona-server-*
+        state: absent
+        purge: yes
+        autoremove: yes
       ignore_errors: yes # may not have installed one of the external repos yet
       become: yes
-      with_items:
-        - percona-server-*
 
     - name: Remove MySQLdb
       shell: rm -rf /usr/local/lib/python2.7/*

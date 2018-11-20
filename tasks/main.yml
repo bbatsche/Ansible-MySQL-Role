@@ -12,15 +12,23 @@
   when: install_percona
 
 - block:
-  - name: Install Percona Toolkit
-    apt: package=percona-toolkit state=present
+  - name: Install Percona Toolkit & Pip
+    apt:
+      package:
+        - percona-toolkit
+        - "{{ 'python3-pip' if ansible_python.version.major == 3 else 'python-pip' }}"
+      state: present
+    become: yes
+
+  - name: Install PyMySQL
+    pip: name=pymysql
     become: yes
 
   - name: Delete Default Configs
     file: name=/etc/mysql/{{ item }} state=absent
     become: yes
     notify: Restart MySQL
-    with_items:
+    loop:
       - conf.d/mariadb.cnf
       - conf.d/mysqld_safe_syslog.cnf
       - mysql.conf.d/mysqld.cnf
@@ -32,7 +40,7 @@
     become: yes
     when: item.when
     notify: Restart MySQL
-    with_items:
+    loop:
       - { src: my.cnf.j2,          dest: my.cnf,                 when: yes }
       - { src: mysqld_safe.cnf.j2, dest: conf.d/mysqld_safe.cnf, when: yes }
       - { src: mysqld.cnf.j2,      dest: conf.d/mysqld.cnf,      when: yes }
