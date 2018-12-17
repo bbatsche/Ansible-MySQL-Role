@@ -25,6 +25,7 @@
   loop: "{{ local_hosts }}"
 
 - name: Remove Root User
+  when: remove_root_user
   mysql_user:
     name:              root
     host_all:          yes
