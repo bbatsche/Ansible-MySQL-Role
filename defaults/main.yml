@@ -4,6 +4,8 @@ db_pass:  vagrant
 
 env_name: dev
 
+remove_root_user: yes
+
 install_mysql: no
 install_mariadb: no
 install_percona: no

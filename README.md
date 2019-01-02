@@ -24,6 +24,7 @@ Role Variables
 - `new_db_user` &mdash; Username of new user to create. Default is undefined (skipped)
 - `new_db_pass` &mdash; Password of new user to create. Default is undefined (skipped)
 - `new_db_priv` &mdash; Privileges to grant new user. Default is to give them full control of server, or database (if defined)
+- `remove_root_user` &mdash; Remove root user during installation. Default is to remove it.
 - `mysql_deb` &mdash; URL of MySQL repository to add to APT. Default is "https://dev.mysql.com/get/mysql-apt-config_0.8.9-1_all.deb"
 - `mariadb_apt_key.trusty` &mdash; APT key for installing MariaDB on Trusty Tahr. Default is "0xcbcb082a1bb943db"
 - `mariadb_apt_key.xenial` &mdash; APT key for installing MariaDB on Xenial Xerus. Default is "0xF1656F24C74CD1D8"
