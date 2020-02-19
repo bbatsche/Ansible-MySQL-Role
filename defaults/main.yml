@@ -10,7 +10,7 @@ install_mysql: no
 install_mariadb: no
 install_percona: no
 
-mysql_deb: https://dev.mysql.com/get/mysql-apt-config_0.8.10-1_all.deb
+mysql_deb: https://dev.mysql.com/get/mysql-apt-config_0.8.14-1_all.deb
 mysql_version: "8.0"
 
 mariadb_apt_key:

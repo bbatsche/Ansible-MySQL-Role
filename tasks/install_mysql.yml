@@ -10,6 +10,13 @@
 - name: Add MySQL Package
   apt: deb={{ mysql_deb }}
   become: yes
+  register: mysql_package_added
+
+- name: Update APT Cache
+  apt:
+    update_cache: yes
+  become: yes
+  when: mysql_package_added is changed
 
 - name: Install MySQL
   apt: name={{ mysql_apt_packages }} state=present update_cache=yes

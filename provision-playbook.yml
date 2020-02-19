@@ -3,7 +3,7 @@
   gather_facts: false
 
   vars:
-    use_python3: "{{ lookup('env', 'ANSIBLE_PYTHON_VERSION') == '3' }}"
+    use_python3: "{{ lookup('env', 'ANSIBLE_PYTHON_VERSION') != '2' }}"
 
   roles:
     - bbatsche.Base
