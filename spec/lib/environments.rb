@@ -10,13 +10,13 @@ if ENV["CONTINUOUS_INTEGRATION"] == "true"
     {:name => "bionic", :image => Docker::Image.build("from ubuntu:bionic\nrun apt-get update && apt-get install -y init")}
   ].each do |vm|
     env = DockerEnv.new(vm[:name], vm[:image])
-    env.use_python3 = ENV["ANSIBLE_PYTHON_VERSION"] == "3"
+    env.use_python3 = ENV["ANSIBLE_PYTHON_VERSION"] != "2"
     AnsibleHelper << env
   end
 else
   ["trusty", "xenial", "bionic"].each do |vm|
     env = VagrantEnv.new(vm)
-    env.use_python3 = ENV["ANSIBLE_PYTHON_VERSION"] == "3"
+    env.use_python3 = ENV["ANSIBLE_PYTHON_VERSION"] != "2"
     AnsibleHelper << env
   end
 end
