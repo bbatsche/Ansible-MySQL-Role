@@ -2,9 +2,7 @@ require "serverspec"
 require "date"
 
 shared_examples "nginx" do |use_ssl=false|
-  describe command("nginx -t") do
-    let(:disable_sudo) { false }
-
+  describe command("nginx -t"), :sudo => true do
     it "has no errors" do
       expect(subject.stderr).to match /configuration file [[:graph:]]+ syntax is ok/
       expect(subject.stderr).to match /configuration file [[:graph:]]+ test is successful/
@@ -62,8 +60,8 @@ shared_examples "curl request html" do
     expect(subject.stdout.gsub(/\r/, '')).to match /^X-XSS-Protection: 1; mode=block$/i
   end
 
-  it "disables cache transforms" do
-    expect(subject.stdout.gsub(/\r/, '')).to match /^Cache-Control: no-transform$/i
+  it "uses a secure referrer policy" do
+    expect(subject.stdout.gsub(/\r/, '')).to match /^Referrer-Policy: strict-origin-when-cross-origin$/i
   end
 end
 
